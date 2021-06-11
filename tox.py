@@ -5,28 +5,55 @@ import asyncio
 import json
 from decouple import config
 import os
-
+import pyrebase
 
 token = config("TOKEN")
+
 intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
-emojisOn = False
-MUTED_ROLE_ID = 850328365260734474
-GUILD_ID = 843823778755641344
+MUTED_ROLE_ID = 785030970050740236
+GUILD_ID = 785024897863647282
 user_db = []
+
+firebase = pyrebase.initialize_app(json.loads(config("firebaseConfig")))
+db = firebase.database()
+
+def create(user: int):
+  db.child("DETOX_USER").child(user).set(
+        {"DETOX": "True"}
+  )
+
+def check(user: int):
+  member = db.child("DETOX_USER").child(user).get().val()
+  if member == None:
+    return False
+  else:
+    return True  
+
+def remove(user: int):
+  db.child("DETOX_USER").child(user).remove()    
+
+ver_user=[
+  666578281142812673,
+  784363251940458516,
+  443844596586250240,
+  695870470045696020,
+  735065640456683591,
+  801995428044079134
+]
 
 client = commands.Bot(command_prefix='t.', case_insensitive=True, intents=intents)
 client.remove_command("help")
 
+
 @client.event
 async def on_ready():
   await client.change_presence(status=discord.Status.online, activity=discord.Game('With Miko Chan'))
-  print('Bot is Online.')
+  print('Bot is Online.')  
 
 @client.command()
 async def help(ctx):
-  try:
     h = discord.Embed(
       title="NEED HELP?",
       description="Bot Creator: **ASHISH**",
@@ -44,23 +71,21 @@ async def help(ctx):
     )
     h.add_field(
       name="__COMMANDS__",
-      value=f"`detox (time)` Starts detox timer for the user.",
+      value=f"`detox (time)` Starts detox timer for the user.\n`stop (user)` This command can be used only by me, admins or the mods. It stops the detox timer for the user.",
+      inline=False
+    )
+    h.add_field(
+      name="__TO STOP TIMER__",
+      value=f"In case you accidently started a detox or want to stop your detox timer, you can either contact `me`, `admin` or the `mods`.",
       inline=False
     )
 
     await ctx.send(embed=h)
-  except Exception as e:
-    print(e)
 
-  @client.command()
-  async def source(ctx):
-    await ctx.send("https://replit.com/@AshKun/tox-chan")  
+@client.command()
+async def source(ctx):
+  await ctx.send("https://replit.com/@AshKun/tox-chan")  
 
-def add_member(member):
-  user_db.append(member)
-
-def remove(member):
-  user_db.remove(member)      
 
 @client.command()
 async def detox(ctx, time=None):
@@ -71,19 +96,43 @@ async def detox(ctx, time=None):
     old_nick = member.display_name
     new_nick = "[DETOX]" + old_nick
     role = discord.utils.get(ctx.guild.roles, name="Muted")
-    time_convert = {"s":1, "m":60, "h":3600,"d":86400}
-    tempmute= int(time[0]) * time_convert[time[-1]]
-    await member.edit(nick=new_nick)
-    await member.add_roles(role)
-    user_db.append(ctx.author.id)
-    print(user_db)
-    detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox for {time}\nGood Luck!", color=0x13fc03)
-    await ctx.send(embed=detox_embed)
-    await asyncio.sleep(tempmute)
-    await member.remove_roles(role)
-    undetox_embed = discord.Embed(title="Your detox has ended!", description=f"{member.mention} you were on detox for {time}\nGreat work!", color=0x13fc03)
-    await ctx.send(embed=undetox_embed)
-    await member.edit(nick=old_nick)
+    time_convert = {"m": 60,"h":3600,"d":86400}
+    if time[-1] == "h" or time[-1] == "d" or time[-1] == "m":
+      tempmute= int(time[:-1]) * time_convert[time[-1]]
+      await member.edit(nick=new_nick)
+      await member.add_roles(role)
+      create(ctx.author.id)
+      detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox for {time}\nGood Luck!", color=0x13fc03)
+      await ctx.send(embed=detox_embed)
+      await asyncio.sleep(tempmute)
+      if check(ctx.author.id) == True:
+        await member.remove_roles(role)
+        undetox_embed = discord.Embed(title="Your detox has ended!", description=f"{member.mention} you were on detox for {time}\nGreat work!", color=0x13fc03)
+        await ctx.send(embed=undetox_embed)
+        await member.edit(nick=old_nick)
+        remove(ctx.author.id)
+      else:
+        return  
+    else:
+      await ctx.send(f"{ctx.author.mention}Would that even be considered a detox?") 
+            
+
+@client.command()
+async def stop(ctx, member: discord.Member):
+  role = discord.utils.get(ctx.guild.roles, name="Muted")
+  if ctx.author.id in ver_user:
+    if check(member.id) == True:
+      nick = member.display_name
+      new_nick = nick[7:]
+      await member.remove_roles(role)
+      await member.edit(nick=new_nick)
+      remove(member.id)
+      undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you are not on detox now.", color=0x13fc03)
+      await ctx.send(embed=undetox_embed)
+    else:
+      await ctx.send("The specified user is not on detox currently.")  
+  else:
+    await ctx.send(f"{ctx.author.mention} You do not have permission to use this command!")    
 
 @client.event
 async def on_message(message):
@@ -91,8 +140,9 @@ async def on_message(message):
   if message.author.bot:
     return
   for mention in message.mentions:
-    if mention.id in user_db:
+    if check(mention.id) == True:
       await message.channel.send(
         f"{message.author.mention}, **{mention}** is on DETOX! Do not ping them!", delete_after=25,)
 
 client.run(token)     
+ 
