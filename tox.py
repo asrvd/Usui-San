@@ -44,6 +44,11 @@ ver_user=[
   823442783456329759
 ]
 
+black_list=[
+  752883707513143307,
+  486446364155445258
+]
+
 client = commands.Bot(command_prefix='t.', case_insensitive=True, intents=intents)
 client.remove_command("help")
 
@@ -90,41 +95,44 @@ async def source(ctx):
 
 @client.command()
 async def detox(ctx, time=None):
-  if not time:
-    await ctx.send("You must mention a time!")
-  else:
-    member = ctx.author  
-    old_nick = member.display_name
-    new_nick = "[DETOX]" + old_nick
-    role = discord.utils.get(ctx.guild.roles, name="Muted")
-    time_convert = {"m": 60,"h":3600,"d":86400}
-    global timer
-    timer = True
-    if time[-1] == "h" or time[-1] == "d" or time[-1] == "m":
-      tempmute= (abs(int(time[:-1])) * time_convert[time[-1]]) + 1
-      t = int(time[:-1]) * time_convert[time[-1]]
-      while(tempmute):
-        await asyncio.sleep(1)
-        tempmute -= 1
-
-        if timer == False:
-          break
-
-        if (tempmute == t):
-          await member.edit(nick=new_nick)
-          await member.add_roles(role)
-          create(ctx.author.id)
-          detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox for {time}\nGood Luck!", color=0x13fc03)
-          await ctx.send(member.mention, embed=detox_embed)
-
-        if (tempmute == 0):
-          await member.edit(nick=old_nick)
-          await member.remove_roles(role)
-          remove(ctx.author.id)
-          undetox_embed = discord.Embed(title="Your detox has ended!", description=f"{member.mention} you were on detox for {time}\nGreat work!", color=0x13fc03)
-          await ctx.send(member.mention, embed=undetox_embed)
+  if ctx.author.id not in black_list:
+    if not time:
+      await ctx.send("You must mention a time!")
     else:
-      await ctx.send(f"{ctx.author.mention} Command nahi pata to `t.help` kar ke dekh le na..") 
+      member = ctx.author  
+      old_nick = member.display_name
+      new_nick = "[DETOX]" + old_nick
+      role = discord.utils.get(ctx.guild.roles, name="Muted")
+      time_convert = {"m": 60,"h":3600,"d":86400}
+      global timer
+      timer = True
+      if time[-1] == "h" or time[-1] == "d" or time[-1] == "m":
+        tempmute= (abs(int(time[:-1])) * time_convert[time[-1]]) + 1
+        t = int(time[:-1]) * time_convert[time[-1]]
+        while(tempmute):
+          await asyncio.sleep(1)
+          tempmute -= 1
+
+          if timer == False:
+            break
+
+          if (tempmute == t):
+            await member.edit(nick=new_nick)
+            await member.add_roles(role)
+            create(ctx.author.id)
+            detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox for {time}\nGood Luck!", color=0x13fc03)
+            await ctx.send(member.mention, embed=detox_embed)
+
+          if (tempmute == 0):
+            await member.edit(nick=old_nick)
+            await member.remove_roles(role)
+            remove(ctx.author.id)
+            undetox_embed = discord.Embed(title="Your detox has ended!", description=f"{member.mention} you were on detox for {time}\nGreat work!", color=0x13fc03)
+            await ctx.send(member.mention, embed=undetox_embed)
+      else:
+        await ctx.send(f"{ctx.author.mention} Command nahi pata to `t.help` kar ke dekh le na..")
+  else:
+    await ctx.send(f"{ctx.author.mention} You don't have permission to use this bot.")
             
 
 @client.command()
