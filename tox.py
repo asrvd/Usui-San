@@ -105,7 +105,6 @@ async def detox(ctx, time=None):
       t = int(time[:-1]) * time_convert[time[-1]]
       while(tempmute):
         await asyncio.sleep(1)
-        print(tempmute)
         tempmute -= 1
 
         if timer == False:
