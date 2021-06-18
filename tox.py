@@ -118,7 +118,6 @@ async def detox(ctx, time=None):
           await ctx.send(member.mention, embed=detox_embed)
 
         if (tempmute == 0):
-          await ctx.send(f"detox ended {member.mention}")
           await member.edit(nick=old_nick)
           await member.remove_roles(role)
           remove(ctx.author.id)
