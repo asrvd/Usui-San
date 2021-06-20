@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 import asyncio
 import json
@@ -36,7 +36,7 @@ def remove(user: int):
   db.child("DETOX_USER").child(user).remove()    
 
 def add_time(user: int, time: int):
-  user = db.child("DETOX_USER").child(user).get().val()
+  detox_user = db.child("DETOX_USER").child(user).get().val()
   if detox_user == None:
     create(user, time)
   else:  
@@ -108,7 +108,7 @@ async def detox(ctx):
     create(ctx.author.id)
     user_db.append(ctx.author.id)
   else:
-    await ctx.send(f"{member.mention} You are already on detox!")
+    await ctx.send(f"{ctx.author.mention} You are already on detox!")
 
 @client.command()
 async def stop(ctx):
