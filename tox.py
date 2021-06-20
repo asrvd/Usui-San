@@ -86,12 +86,17 @@ async def help(ctx):
       value=f"To stop timer send the command `t.stop` in `#Bot-Commands` channel.",
       inline=False
     )
+    h.add_field(
+      name="__SOURCE CODE__",
+      value="`t.source",
+      inline=False
+    )
 
     await ctx.send(embed=h)
 
 @client.command()
 async def source(ctx):
-  await ctx.send("https://replit.com/@AshKun/tox-chan")  
+  await ctx.send("https://github.com/AsheeshhSenpai/tox-kun")  
 
 
 @client.command()
