@@ -15,7 +15,7 @@ intents.presences = True
 MUTED_ROLE_ID = 785030970050740236
 GUILD_ID = 785024897863647282
 user_db = []
-TIME_REFRESH = 1
+time_refresh = 1
 
 firebase = pyrebase.initialize_app(json.loads(config("firebaseConfig")))
 db = firebase.database()
@@ -57,7 +57,9 @@ client.remove_command("help")
 @client.event
 async def on_ready():
   await client.change_presence(status=discord.Status.online, activity=discord.Game('With Miko Chan'))
-  print('Bot is Online.')  
+  print('Bot is Online.')
+  refresh_time.run()
+  on_detox.run()  
 
 @client.command()
 async def help(ctx):
@@ -123,9 +125,9 @@ async def stop(ctx):
     new_nick = nick[7:]
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.remove_roles(role)
+    hour, minute = return_time(ctx.author.id)
     remove(ctx.author.id)
     user_db.remove(ctx.author.id)
-    hour, minute = return_time(ctx.author.id)
     if nick.startswith("[DETOX]"):
         await member.edit(nick=new_nick)
     undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you were on detox for {hour} hour and {minute} minutes.", color=0x13fc03)
@@ -146,7 +148,7 @@ async def on_detox():
 async def refresh_time():
   for user in user_db:
     if check(user) == True:
-      add_time(user, TIME_REFRESH)
+      add_time(user, time_refresh)
 
 @client.event
 async def on_message(message):
