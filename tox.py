@@ -124,7 +124,6 @@ async def stop(ctx):
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.remove_roles(role)
     remove(ctx.author.id)
-    user_db.remove(ctx.author.id)
     if nick.startswith("[DETOX]"):
       await member.edit(nick=new_nick)
     undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you are unmuted now.", color=0x13fc03)
