@@ -110,7 +110,7 @@ async def detox(ctx):
     await member.add_roles(role)
     detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop`.\nGood Luck!", color=0x13fc03)
     await ctx.send(member.mention, embed=detox_embed)
-    create(ctx.author.id, 1)
+    create(ctx.author.id, 0)
     user_db.append(ctx.author.id)
   else:
     await ctx.send(f"{ctx.author.mention} You are already on detox!")
