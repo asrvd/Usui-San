@@ -147,8 +147,11 @@ async def on_detox():
 @tasks.loop(minutes=1)
 async def refresh_time():
   users = db.child("DETOX_USER").get()
-  for user in users.each():
-    add_time(user.key, time_refresh)
+  try:
+    for user in users.each():
+      add_time(user.key, time_refresh)
+  except TypeError as e:
+    print(e)    
 
 @client.event
 async def on_message(message):
