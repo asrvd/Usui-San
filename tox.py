@@ -88,7 +88,7 @@ async def help(ctx):
     )
     h.add_field(
       name="__SOURCE CODE__",
-      value="`t.source",
+      value="`t.source`",
       inline=False
     )
 
