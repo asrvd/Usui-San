@@ -148,7 +148,7 @@ async def on_detox():
 async def refresh_time():
   users = db.child("DETOX_USER").get()
   for user in users.each():
-    add_time(user, time_refresh)
+    add_time(user.key, time_refresh)
 
 @client.event
 async def on_message(message):
