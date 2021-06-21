@@ -58,8 +58,8 @@ client.remove_command("help")
 async def on_ready():
   await client.change_presence(status=discord.Status.online, activity=discord.Game('With Miko Chan'))
   print('Bot is Online.')
-  refresh_time.run()
-  on_detox.run()  
+  refresh_time.start()
+  on_detox.start()  
 
 @client.command()
 async def help(ctx):
