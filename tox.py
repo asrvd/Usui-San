@@ -57,9 +57,7 @@ client.remove_command("help")
 @client.event
 async def on_ready():
   await client.change_presence(status=discord.Status.online, activity=discord.Game('With Miko Chan'))
-  print('Bot is Online.')
-  refresh_time.start()
-  on_detox.start()  
+  print('Bot is Online.') 
 
 @client.command()
 async def help(ctx):
@@ -125,33 +123,15 @@ async def stop(ctx):
     new_nick = nick[7:]
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.remove_roles(role)
-    hour, minute = return_time(ctx.author.id)
     remove(ctx.author.id)
     user_db.remove(ctx.author.id)
     if nick.startswith("[DETOX]"):
-        await member.edit(nick=new_nick)
-    undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you were on detox for {hour} hour and {minute} minutes.", color=0x13fc03)
+      await member.edit(nick=new_nick)
+    undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you are unmuted now.", color=0x13fc03)
     await ctx.send(member.mention, embed=undetox_embed)  
   else:
     await ctx.send(f"{member.mention} You are currently not on detox! Send `t.detox` to start detox.")
-
-@tasks.loop(seconds=10)
-async def on_detox():
-  users = db.child("DETOX_USER").get()
-  for user in users.each():
-    if user in user_db:
-      return
-    else:
-      user_db.append(user)  
-
-@tasks.loop(minutes=1)
-async def refresh_time():
-  users = db.child("DETOX_USER").get()
-  try:
-    for user in users.each():
-      add_time(user.key, time_refresh)
-  except TypeError as e:
-    print(e)    
+ 
 
 @client.event
 async def on_message(message):
