@@ -73,7 +73,7 @@ async def help(ctx):
     )
     h.add_field(
       name="__HOW TO USE__",
-      value=f"To mute yourself you will have to send the command `t.detox` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in `#Bot-Commands` channel.",
+      value=f"To mute yourself you will have to send the command `t.detox` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in my DM.",
       inline=False
     )
     h.add_field(
@@ -83,7 +83,7 @@ async def help(ctx):
     )
     h.add_field(
       name="__TO STOP TIMER__",
-      value=f"To stop timer send the command `t.stop` in `#Bot-Commands` channel.",
+      value=f"To stop timer send the command `t.stop` in my DM.",
       inline=False
     )
     h.add_field(
