@@ -108,7 +108,7 @@ async def detox(ctx):
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.edit(nick = new_nick)
     await member.add_roles(role)
-    detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop`.\nGood Luck!", color=0x13fc03)
+    detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop` in my DM.\nGood Luck!", color=0x13fc03)
     await ctx.send(member.mention, embed=detox_embed)
     create(ctx.author.id, 0)
     user_db.append(ctx.author.id)
@@ -117,13 +117,14 @@ async def detox(ctx):
 
 @client.command()
 async def stop(ctx):
-  member = ctx.author
+  guild = client.get_guild(GUILD_ID)
+  member = guild.get_member(ctx.author.id)
   if check(member.id) == True:
     nick = member.display_name
     new_nick = nick[7:]
-    role = discord.utils.get(ctx.guild.roles, name="Muted")
+    role = discord.utils.get(guild.roles, name="Muted")
     await member.remove_roles(role)
-    remove(ctx.author.id)
+    remove(member.id)
     if nick.startswith("[DETOX]"):
       await member.edit(nick=new_nick)
     undetox_embed = discord.Embed(title="Your detox timer has been stopped!", description=f"{member.mention} you are unmuted now.", color=0x13fc03)
