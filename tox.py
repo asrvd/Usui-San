@@ -73,7 +73,7 @@ async def help(ctx):
     )
     h.add_field(
       name="__HOW TO USE__",
-      value=f"To mute yourself you will have to send the command `t.detox` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in my DM.",
+      value=f"To mute yourself you will have to send the command `t.detox` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in my DM. Make sure that you are accepting DMs from server members or else Usui will not be able to unmute you!",
       inline=False
     )
     h.add_field(
@@ -98,7 +98,6 @@ async def help(ctx):
 async def source(ctx):
   await ctx.send("https://github.com/AsheeshhSenpai/tox-kun")  
 
-
 @client.command()
 async def detox(ctx):
   if check(ctx.author.id) == False:
@@ -108,7 +107,7 @@ async def detox(ctx):
     role = discord.utils.get(ctx.guild.roles, name="Muted")
     await member.edit(nick = new_nick)
     await member.add_roles(role)
-    detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop` in my DM.\nGood Luck!", color=0x13fc03)
+    detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop` in my DM and make sure that you are accepting DM from server members.\nGood Luck!", color=0x13fc03)
     await ctx.send(member.mention, embed=detox_embed)
     create(ctx.author.id, 0)
     user_db.append(ctx.author.id)
