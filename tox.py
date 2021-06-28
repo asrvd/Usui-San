@@ -62,7 +62,7 @@ async def help(ctx):
     )
     h.add_field(
       name="__HOW TO USE__",
-      value=f"To mute yourself you will have to send the command `t.detox` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in my DM. Make sure that you are accepting DMs from server members or else Usui will not be able to unmute you!",
+      value=f"To mute yourself you will have to send the command `t.detox (your note)` and Tox kun will mute you from the server. When you want to unmute yourself send teh command `t.stop` in my DM. Make sure that you are accepting DMs from server members or else Usui will not be able to unmute you!",
       inline=False
     )
     h.add_field(
