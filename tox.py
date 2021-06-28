@@ -101,7 +101,7 @@ async def embed(ctx, *, title):
     await ctx.send("You don't have perms to use this cmd!")
   
 @client.command()
-async def detox(ctx, *, message: None):
+async def detox(ctx, *, message = None):
   if check(ctx.author.id) == False:
     if message == None:
       message = "None"
