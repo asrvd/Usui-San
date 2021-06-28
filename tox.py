@@ -16,13 +16,14 @@ MUTED_ROLE_ID = 785030970050740236
 GUILD_ID = 785024897863647282
 user_db = []
 time_refresh = 1
+GENERAL_ID = 785024897863647285
 
 firebase = pyrebase.initialize_app(json.loads(config("firebaseConfig")))
 db = firebase.database()
 
-def create(user: int, time: int):
+def create(user: int, message: str):
   db.child("DETOX_USER").child(user).set(
-        {"DETOX_TIME": time}
+        {"DETOX_MESSAGE": message}
   )
 
 def check(user: int):
@@ -35,21 +36,9 @@ def check(user: int):
 def remove(user: int):
   db.child("DETOX_USER").child(user).remove()    
 
-def add_time(user: int, time: int):
-  detox_user = db.child("DETOX_USER").child(user).get().val()
-  if detox_user == None:
-    create(user, time)
-  else:  
-    auth = db.child("DETOX_USER").child(user).child("DETOX_TIME").get()
-    t = auth.val()
-    t = t + time
-    db.child("USER_TIME").child(user).update({"DETOX_TIME": t})
-
-def return_time(user: int):
-  time = db.child("DETOX_USER").child(user).child("DETOX_TIME").get().val()
-  hour = int(time/60)
-  min = time%60
-  return hour, min
+def return_message(user: int):
+  note = db.child("DETOX_USER").child(user).child("DETOX_MESSAGE").get().val()
+  return note
 
 client = commands.Bot(command_prefix='t.', case_insensitive=True, intents=intents)
 client.remove_command("help")
@@ -99,7 +88,20 @@ async def source(ctx):
   await ctx.send("https://github.com/AsheeshhSenpai/tox-kun")  
 
 @client.command()
-async def detox(ctx):
+async def embed(ctx, *, title):
+  if ctx.author.id == 784363251940458516:
+    guild = client.get_guild(GUILD_ID)
+    GENERAL= guild.get_channel(GENERAL_ID)
+    await ctx.send(" Please send description.")
+    desc = await client.wait_for("message", check=lambda message: message.author == ctx.author)
+    description = str(desc.content)
+    emb = discord.Embed(title=f"{title}", description=f"{description}")
+    await GENERAL.send(embed=emb)
+  else:
+    await ctx.send("You don't have perms to use this cmd!")
+  
+@client.command()
+async def detox(ctx, *, message):
   if check(ctx.author.id) == False:
     member = ctx.author  
     old_nick = member.display_name
@@ -109,7 +111,7 @@ async def detox(ctx):
     await member.add_roles(role)
     detox_embed = discord.Embed(title="Your detox starts now!", description=f"{member.mention} is on detox. To stop your detox timer send `t.stop` in my DM and make sure that you are accepting DM from server members.\nGood Luck!", color=0x13fc03)
     await ctx.send(member.mention, embed=detox_embed)
-    create(ctx.author.id, 0)
+    create(ctx.author.id, message)
     user_db.append(ctx.author.id)
   else:
     await ctx.send(f"{ctx.author.mention} You are already on detox!")
@@ -139,8 +141,9 @@ async def on_message(message):
     return
   for mention in message.mentions:
     if check(mention.id) == True:
+      message = return_message(mention.id)
       await message.channel.send(
-        f"{message.author.mention}, **{mention}** is on DETOX! Do not ping them!", delete_after=25,)
+        f"{message.author.mention}, **{mention}** is on DETOX! Do not ping them!\nNOTE: **{message}**", delete_after=25,)
 
 client.run(token)     
  
