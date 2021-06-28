@@ -104,7 +104,7 @@ async def embed(ctx, *, title):
 async def detox(ctx, *, message: None):
   if check(ctx.author.id) == False:
     if message == None:
-      message = ""
+      message = "None"
     member = ctx.author  
     old_nick = member.display_name
     new_nick = "[DETOX]" + old_nick
