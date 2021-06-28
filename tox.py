@@ -141,9 +141,9 @@ async def on_message(message):
     return
   for mention in message.mentions:
     if check(mention.id) == True:
-      message = return_message(mention.id)
+      note = return_message(mention.id)
       await message.channel.send(
-        f"{message.author.mention}, **{mention}** is on DETOX! Do not ping them!\nNOTE: **{message}**", delete_after=25,)
+        f"{message.author.mention}, **{mention}** is on DETOX! Do not ping them!\nNOTE: **{note}**", delete_after=25,)
 
 client.run(token)     
  
